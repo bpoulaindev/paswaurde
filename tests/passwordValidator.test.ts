@@ -1,28 +1,35 @@
-import { test, assert } from "vitest";
+import { test, expect } from "vitest";
 import { validatePassword } from "../validators/passwordValidator";
 
 test("Mot de passe valide", () => {
     const result = validatePassword("Password123");
-    assert(result.isValid, "Le mot de passe doit être valide");
-    assert(result.errors.length === 0, "Il ne doit y avoir aucune erreur de validation");
+    expect(result.isValid).toBe(true);
+    expect(result.errors.length).toBe(0);
 });
 
 test("Mot de passe trop court", () => {
     const result = validatePassword("pass");
-    assert(!result.isValid, "Le mot de passe doit être invalide");
-    assert(result.errors.length === 0, "Il doit y avoir une erreur de validation");
-    assert(
-        result.errors[0] === "Le mot de passe doit comporter au moins 8 caractères",
-        "Le message d'erreur doit être correct"
-    );
+    expect(result.isValid).toBe(false);
+    expect(result.errors.length).toBe(1);
+    expect(result.errors[0]).toBe("Le mot de passe doit comporter au moins 8 caractères");
 });
 
 test("Mot de passe sans chiffre", () => {
     const result = validatePassword("Password");
-    assert(!result.isValid, "Le mot de passe doit être invalide");
-    assert(result.errors.length === 0, "Il doit y avoir une erreur de validation");
-    assert(
-        result.errors[0] === "Le mot de passe doit contenir au moins 1 chiffre",
-        "Le message d'erreur doit être correct"
-    );
+    expect(result.isValid).toBe(false);
+    expect(result.errors.length).toBe(1);
+    expect(result.errors[0]).toBe("Le mot de passe doit contenir au moins 1 chiffre");
 });
+
+test("Le mot de passe doit contenir au moins une lettre majuscule", () => {
+    const result = validatePassword("password123");
+    expect(result.isValid).toBe(false);
+    expect(result.errors).toContain("Le mot de passe doit contenir au moins une lettre majuscule");
+});
+
+test("Le mot de passe doit contenir au moins un caractère spécial", () => {
+    const result = validatePassword("password123");
+    expect(result.isValid).toBe(false);
+    expect(result.errors).toContain("Le mot de passe doit contenir au moins un caractère spécial");
+});
+
